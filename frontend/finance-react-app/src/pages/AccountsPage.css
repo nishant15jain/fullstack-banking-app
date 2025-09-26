@@ -1,0 +1,296 @@
+.accounts-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.accounts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.accounts-header h1 {
+  color: #333;
+  margin: 0;
+  font-size: 2rem;
+}
+
+/* Common styles moved to App.css for shared usage */
+
+.accounts-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+
+.account-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.account-card-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.account-status {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.account-balance {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.balance-label {
+  display: block;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.balance-amount {
+  display: block;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #333;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.account-details {
+  margin-bottom: 2rem;
+}
+
+.account-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.account-info-row .label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.account-info-row .value {
+  color: #333;
+  font-weight: 500;
+  font-family: monospace;
+}
+
+.account-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.view-details-btn,
+.quick-action-btn {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.view-details-btn {
+  grid-column: 1 / -1;
+  margin-bottom: 0.5rem;
+}
+
+.quick-action-btn.deposit {
+  background: #28a745;
+  color: white;
+}
+
+.quick-action-btn.deposit:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.quick-action-btn.withdraw {
+  background: #dc3545;
+  color: white;
+}
+
+.quick-action-btn.withdraw:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.quick-action-btn.delete {
+  background: #6c757d;
+  color: white;
+}
+
+.quick-action-btn.delete:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .accounts-page {
+    padding: 1rem;
+  }
+  
+  .accounts-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .accounts-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .account-card {
+    padding: 1.5rem;
+  }
+  
+  .balance-amount {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .account-actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  
+  .view-details-btn {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
+  }
+  
+  
+  /* Using shared responsive styles from App.css */
+}
+
+/* Account info display in transaction modal */
+.account-info-display {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.account-info-display div {
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.account-info-display div:last-child {
+  margin-bottom: 0;
+}
+
+.account-info-display strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Account Details Modal */
+.account-details-content {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-section h3 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-item label {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.detail-item span {
+  color: #333;
+  font-size: 1rem;
+}
+
+.balance-highlight {
+  font-weight: 700;
+  color: #28a745 !important;
+  font-size: 1.1rem !important;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* Transaction modal specific styles */
+.transaction-modal {
+  max-width: 800px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,138 @@
+.account-summary {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.account-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.account-summary-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+/* Using shared .btn-primary class */
+.create-account-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.total-balance {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.balance-label {
+  display: block;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+}
+
+.balance-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  display: block;
+}
+
+/* Using shared .no-data and .btn-success classes */
+
+.accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.account-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.account-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.account-type {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.account-number {
+  color: #666;
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+.account-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.account-balance {
+  font-weight: 700;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.account-status {
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.view-all-accounts {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* Using shared .btn-outline class */
+
+/* Using shared .loading-placeholder class */
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .account-summary-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+    
+  .account-details {
+    align-items: center;
+  }
+  
+  .balance-amount {
+    font-size: 1.8rem;
+  }
+}

@@ -1,0 +1,402 @@
+.transaction-history {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 24px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.history-header h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-size-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.page-size-control select {
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+}
+
+.refresh-button {
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.refresh-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.no-account-selected,
+.no-transactions {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.transactions-table-container {
+  overflow-x: auto;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.transactions-table th {
+  background: #f8fafc;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.transactions-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.transactions-table th.sortable:hover {
+  background: #e2e8f0;
+}
+
+.transactions-table th.active {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.transactions-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.transactions-table tr:hover {
+  background: #f8fafc;
+}
+
+.transactions-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Transaction type specific row styling */
+.transactions-table tr.deposit {
+  border-left: 4px solid #16a34a;
+}
+
+.transactions-table tr.withdraw {
+  border-left: 4px solid #dc2626;
+}
+
+.transactions-table tr.transfer {
+  border-left: 4px solid #7c3aed;
+}
+
+/* Cell specific styling */
+.date-cell {
+  font-size: 0.875rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.type-cell {
+  white-space: nowrap;
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.transaction-history .type-badge {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.amount-cell {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.amount-cell.deposit {
+  color: #16a34a;
+}
+
+.amount-cell.withdraw {
+  color: #dc2626;
+}
+
+.amount-cell.transfer {
+  color: #7c3aed;
+}
+
+.description-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reference-cell code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.status-cell {
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.status-badge.completed {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-badge.pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-badge.failed {
+  background: #fecaca;
+  color: #dc2626;
+}
+
+.status-badge.cancelled {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pagination-info {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-button,
+.page-number {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.page-button:hover:not(:disabled),
+.page-number:hover:not(.active) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.page-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f9fafb;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.page-number.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .transaction-history {
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .transactions-table-container {
+    font-size: 0.875rem;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 8px 12px;
+  }
+
+  .description-cell {
+    max-width: 120px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .pagination-controls {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .page-button,
+  .page-number {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .transactions-table th:nth-child(4),
+  .transactions-table td:nth-child(4) {
+    display: none; /* Hide description on very small screens */
+  }
+
+  .page-button {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+
+  .page-button span {
+    display: none; /* Hide text, keep only emoji */
+  }
+}
+
+/* Loading state */
+.transaction-history .loading-spinner {
+  margin: 40px auto;
+}
+
+/* Empty state */
+.no-transactions {
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+/* Hover effects for better UX */
+.transactions-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.sortable {
+  position: relative;
+}
+
+.sortable::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  opacity: 0.3;
+}
+
+.sortable:hover::after {
+  opacity: 0.6;
+}

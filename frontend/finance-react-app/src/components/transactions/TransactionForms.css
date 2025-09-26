@@ -1,0 +1,261 @@
+.transaction-forms {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.transaction-tabs {
+  display: flex;
+  gap: 1px;
+  background: #e1e5e9;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+}
+
+.tab-button:hover {
+  background: rgba(255, 255, 255, 0.6);
+  color: #334155;
+}
+
+.tab-button.active {
+  background: white;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-form {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.transaction-form h3 {
+  margin: 0 0 24px 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.account-info {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #3b82f6;
+}
+
+.account-info label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.account-info input {
+  width: 100%;
+  padding: 8px 0;
+  background: transparent;
+  border: none;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group select option {
+  padding: 8px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.submit-button:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.success-message {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .transaction-forms {
+    margin: 0 16px;
+    padding: 20px;
+  }
+  
+  .transaction-tabs {
+    flex-direction: column;
+  }
+  
+  .tab-button {
+    text-align: left;
+  }
+  
+  .transaction-form h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Loading spinner styles for small size */
+.submit-button .loading-spinner {
+  width: 20px;
+  height: 20px;
+}
+
+/* Transaction type specific styling */
+.transaction-form[data-type="deposit"] .submit-button {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.transaction-form[data-type="deposit"] .submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #15803d, #166534);
+}
+
+.transaction-form[data-type="withdraw"] .submit-button {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.transaction-form[data-type="withdraw"] .submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
+}
+
+.transaction-form[data-type="transfer"] .submit-button {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+.transaction-form[data-type="transfer"] .submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+}
+
+/* Input validation styling */
+.form-group input:invalid:not(:focus) {
+  border-color: #f87171;
+}
+
+.form-group input:valid:not(:focus) {
+  border-color: #34d399;
+}
+
+/* Amount input specific styling */
+input[type="number"] {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+/* Account selection styling */
+.form-group select {
+  font-family: 'Courier New', monospace;
+}
+
+.form-group select option {
+  font-family: 'Courier New', monospace;
+}
