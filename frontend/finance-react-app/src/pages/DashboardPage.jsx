@@ -1,93 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useAccounts } from '../hooks/useAccounts';
+import { useTransactionHistory } from '../hooks/useTransactions';
 import AccountSummary from '../components/dashboard/AccountSummary';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
 import CreateAccountForm from '../components/accounts/CreateAccountForm';
 import Navigation from '../components/common/Navigation';
-import { accountService } from '../services/accountService';
-import { transactionService } from '../services/transactionService';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [accounts, setAccounts] = useState([]);
-  const [recentTransactions, setRecentTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [transactionsLoading, setTransactionsLoading] = useState(true);
+  
+  // React Query hooks
+  const { data: accounts = [], isLoading: loading, error: queryError } = useAccounts();
+  
+  // Get transactions from the first account (or could be modified to get from all accounts)
+  const firstAccountNumber = accounts.length > 0 ? accounts[0].accountNumber : null;
+  const { 
+    data: transactionData = [], 
+    isLoading: transactionsLoading 
+  } = useTransactionHistory(firstAccountNumber);
+  
+  // Local state
   const [showCreateAccount, setShowCreateAccount] = useState(false);
-  const [error, setError] = useState('');
+  
+  // Convert query error to string for display
+  const error = queryError ? 'Failed to load dashboard data. Please try again.' : '';
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
+  // Process recent transactions (get the 5 most recent)
+  const recentTransactions = transactionData.slice(0, 5);
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const accountsData = await accountService.getUserAccounts();
-      setAccounts(accountsData);
-      
-      // Load recent transactions from all accounts
-      if (accountsData.length > 0) {
-        await loadRecentTransactions(accountsData);
-      } else {
-        setTransactionsLoading(false);
-      }
-    } catch (err) {
-      setError('Failed to load dashboard data. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadRecentTransactions = async (userAccounts) => {
-    try {
-      setTransactionsLoading(true);
-      const allTransactions = [];
-      
-      // Get transactions from all accounts (limit to first 2 accounts to avoid too many requests)
-      const accountsToCheck = userAccounts.slice(0, 2);
-      
-      for (const account of accountsToCheck) {
-        try {
-          const transactions = await transactionService.getTransactionHistory(account.accountNumber);
-          allTransactions.push(...transactions);
-        } catch (err) {
-          // Silently continue with other accounts if one fails
-        }
-      }
-      
-      // Remove duplicate transactions based on transactionRef (for transfers between user's own accounts)
-      const uniqueTransactions = allTransactions.reduce((unique, transaction) => {
-        const existingTransaction = unique.find(t => t.transactionRef === transaction.transactionRef);
-        if (!existingTransaction) {
-          unique.push(transaction);
-        }
-        return unique;
-      }, []);
-      
-      // Sort by date and take the 5 most recent
-      const sortedTransactions = uniqueTransactions.sort((a, b) => 
-        new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      
-      setRecentTransactions(sortedTransactions.slice(0, 5));
-    } catch (err) {
-      // Handle error silently
-    } finally {
-      setTransactionsLoading(false);
-    }
-  };
 
   const handleCreateAccount = () => {
     setShowCreateAccount(true);
   };
 
   const handleAccountCreated = (newAccount) => {
-    setAccounts(prev => [...prev, newAccount]);
+    // React Query will automatically update the cache via the mutation
     setShowCreateAccount(false);
     // Show success message or toast here
   };
@@ -127,16 +78,13 @@ const DashboardPage = () => {
         {error && (
           <div className="error-banner">
             {error}
-            <button onClick={loadDashboardData} className="btn-danger">
-              Retry
-            </button>
           </div>
         )}
 
         <div className="dashboard-grid">
           <AccountSummary 
             accounts={accounts}
-            loading={false}
+            loading={loading}
             onCreateAccount={handleCreateAccount}
             onViewAccount={handleViewAccount}
             onDeleteAccount={(account) => navigate('/accounts')}

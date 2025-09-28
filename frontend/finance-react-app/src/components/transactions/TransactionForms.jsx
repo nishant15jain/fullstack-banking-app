@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { transactionService } from '../../services/transactionService';
-import { accountService } from '../../services/accountService';
+import { useAccounts } from '../../hooks/useAccounts';
+import { useDeposit, useWithdraw, useTransfer } from '../../hooks/useTransactions';
 import LoadingSpinner from '../common/LoadingSpinner';
 import './TransactionForms.css';
 
 const TransactionForms = ({ selectedAccountNumber, onTransactionSuccess }) => {
+  // React Query hooks
+  const { data: userAccounts = [], isLoading: loadingAccounts, error: queryError } = useAccounts();
+  const depositMutation = useDeposit();
+  const withdrawMutation = useWithdraw();
+  const transferMutation = useTransfer();
+  
+  // Local state
   const [activeTab, setActiveTab] = useState('deposit');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [userAccounts, setUserAccounts] = useState([]);
-  const [loadingAccounts, setLoadingAccounts] = useState(true);
+
+  // Check if any mutation is loading
+  const loading = depositMutation.isPending || withdrawMutation.isPending || transferMutation.isPending;
 
   // Form data for each transaction type
   const [depositData, setDepositData] = useState({
@@ -30,26 +37,14 @@ const TransactionForms = ({ selectedAccountNumber, onTransactionSuccess }) => {
     description: ''
   });
 
-  // Load user accounts on component mount
+  // Set transfer data when accounts are loaded or selectedAccountNumber changes
   useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const accounts = await accountService.getUserAccounts();
-        setUserAccounts(accounts);
-        if (selectedAccountNumber) {
-          setTransferData(prev => ({ ...prev, sourceAccountNumber: selectedAccountNumber }));
-        } else if (accounts.length > 0) {
-          setTransferData(prev => ({ ...prev, sourceAccountNumber: accounts[0].accountNumber }));
-        }
-      } catch (err) {
-        setError('Failed to load accounts');
-      } finally {
-        setLoadingAccounts(false);
-      }
-    };
-
-    fetchAccounts();
-  }, [selectedAccountNumber]);
+    if (selectedAccountNumber) {
+      setTransferData(prev => ({ ...prev, sourceAccountNumber: selectedAccountNumber }));
+    } else if (userAccounts.length > 0) {
+      setTransferData(prev => ({ ...prev, sourceAccountNumber: userAccounts[0].accountNumber }));
+    }
+  }, [selectedAccountNumber, userAccounts]);
 
   const resetForm = (formType) => {
     setError('');
@@ -80,14 +75,16 @@ const TransactionForms = ({ selectedAccountNumber, onTransactionSuccess }) => {
       return;
     }
 
-    setLoading(true);
     setError('');
     setSuccess('');
 
     try {
-      const result = await transactionService.deposit(selectedAccountNumber, {
-        amount: parseFloat(depositData.amount),
-        description: depositData.description
+      const result = await depositMutation.mutateAsync({
+        accountNumber: selectedAccountNumber,
+        transactionData: {
+          amount: parseFloat(depositData.amount),
+          description: depositData.description
+        }
       });
 
       setSuccess(`Deposit successful! Transaction ID: ${result.transactionRef}`);
@@ -98,8 +95,6 @@ const TransactionForms = ({ selectedAccountNumber, onTransactionSuccess }) => {
       }
     } catch (err) {
       setError(err.message || 'Deposit failed');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -110,14 +105,16 @@ const TransactionForms = ({ selectedAccountNumber, onTransactionSuccess }) => {
       return;
     }
 
-    setLoading(true);
     setError('');
     setSuccess('');
 
     try {
-      const result = await transactionService.withdraw(selectedAccountNumber, {
-        amount: parseFloat(withdrawData.amount),
-        description: withdrawData.description
+      const result = await withdrawMutation.mutateAsync({
+        accountNumber: selectedAccountNumber,
+        transactionData: {
+          amount: parseFloat(withdrawData.amount),
+          description: withdrawData.description
+        }
       });
 
       setSuccess(`Withdrawal successful! Transaction ID: ${result.transactionRef}`);
@@ -128,8 +125,6 @@ const TransactionForms = ({ selectedAccountNumber, onTransactionSuccess }) => {
       }
     } catch (err) {
       setError(err.message || 'Withdrawal failed');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -141,19 +136,18 @@ const TransactionForms = ({ selectedAccountNumber, onTransactionSuccess }) => {
       return;
     }
 
-    setLoading(true);
     setError('');
     setSuccess('');
 
     try {
-      const result = await transactionService.transfer(
-        transferData.sourceAccountNumber,
-        transferData.destinationAccountNumber,
-        {
+      const result = await transferMutation.mutateAsync({
+        sourceAccountNumber: transferData.sourceAccountNumber,
+        destinationAccountNumber: transferData.destinationAccountNumber,
+        transactionData: {
           amount: parseFloat(transferData.amount),
           description: transferData.description
         }
-      );
+      });
 
       setSuccess(`Transfer successful! Transaction ID: ${result.transactionRef}`);
       resetForm('transfer');
@@ -163,8 +157,6 @@ const TransactionForms = ({ selectedAccountNumber, onTransactionSuccess }) => {
       }
     } catch (err) {
       setError(err.message || 'Transfer failed');
-    } finally {
-      setLoading(false);
     }
   };
 

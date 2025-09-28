@@ -2,8 +2,8 @@ import axios from 'axios';
 
 // Base API URL - update this to match your backend
 // const API_BASE_URL = 'http://spring-banking-app-env.eba-ruucqmbm.eu-north-1.elasticbeanstalk.com';
-// const API_BASE_URL = 'http://localhost:8080';
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:8080/api';
+// const API_BASE_URL = '/api';
 
 
 // Create axios instance

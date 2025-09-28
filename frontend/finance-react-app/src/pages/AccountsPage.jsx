@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { accountService } from '../services/accountService';
+import React, { useState } from 'react';
+import { useAccounts, useDeleteAccount } from '../hooks/useAccounts';
 import CreateAccountForm from '../components/accounts/CreateAccountForm';
 import TransactionForms from '../components/transactions/TransactionForms';
 import ConfirmDialog from '../components/common/ConfirmDialog';
@@ -8,12 +8,13 @@ import { formatCurrency, formatDateShort, getAccountStatusColor } from '../utils
 import './AccountsPage.css';
 
 const AccountsPage = () => {
-  const [accounts, setAccounts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // React Query hooks
+  const { data: accounts = [], isLoading: loading, error: queryError, refetch } = useAccounts();
+  const deleteAccountMutation = useDeleteAccount();
+  
+  // Local state
   const [showCreateAccount, setShowCreateAccount] = useState(false);
-  const [error, setError] = useState('');
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, account: null });
-  const [deleting, setDeleting] = useState(false);
   
   // Transaction modal state
   const [showTransactionForms, setShowTransactionForms] = useState(false);
@@ -25,25 +26,11 @@ const AccountsPage = () => {
     account: null
   });
 
-  useEffect(() => {
-    loadAccounts();
-  }, []);
-
-  const loadAccounts = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const accountsData = await accountService.getUserAccounts();
-      setAccounts(accountsData);
-    } catch (err) {
-      setError('Failed to load accounts. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Convert query error to string for display
+  const error = queryError ? 'Failed to load accounts. Please try again.' : '';
 
   const handleAccountCreated = (newAccount) => {
-    setAccounts(prev => [...prev, newAccount]);
+    // React Query will automatically update the cache via the mutation
     setShowCreateAccount(false);
   };
 
@@ -73,39 +60,13 @@ const AccountsPage = () => {
   const confirmDeleteAccount = async () => {
     if (!deleteDialog.account) return;
     
-    setDeleting(true);
-    setError(''); // Clear any previous errors
-    
     try {
-      await accountService.deleteAccount(deleteDialog.account.accountNumber);
-      
-      // Remove the account from the list
-      setAccounts(prev => prev.filter(acc => acc.id !== deleteDialog.account.id));
+      await deleteAccountMutation.mutateAsync(deleteDialog.account.accountNumber);
       setDeleteDialog({ isOpen: false, account: null });
     } catch (err) {
-      // Better error handling based on response
-      let errorMessage = 'Failed to delete account. Please try again.';
-      if (err.response) {
-        if (err.response.status === 401) {
-          errorMessage = 'You are not authorized to delete this account.';
-        } else if (err.response.status === 404) {
-          errorMessage = 'Account not found.';
-        } else if (err.response.status === 403) {
-          // Use the specific error message from the backend
-          errorMessage = err.response.data?.error || 'Access denied. You cannot delete this account.';
-        } else if (err.response.data && err.response.data.error) {
-          errorMessage = err.response.data.error;
-        } else if (err.response.data && err.response.data.message) {
-          errorMessage = err.response.data.message;
-        }
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      
-      setError(errorMessage);
+      // Error handling is managed by React Query, but we can still show user-friendly messages
+      console.error('Failed to delete account:', err);
       setDeleteDialog({ isOpen: false, account: null });
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -114,15 +75,12 @@ const AccountsPage = () => {
   };
 
   const handleTransactionSuccess = (transactionResult) => {
-    // Reload accounts to get updated balances
-    loadAccounts();
+    // Refetch accounts to get updated balances
+    refetch();
     
     // Close the transaction forms modal
     setShowTransactionForms(false);
     setSelectedAccountForTransaction(null);
-    
-    // Show success message briefly
-    setError('');
   };
 
   const closeAccountDetails = () => {
@@ -163,7 +121,7 @@ const AccountsPage = () => {
       {error && (
         <div className="error-banner">
           {error}
-          <button onClick={loadAccounts} className="btn-danger">
+          <button onClick={() => refetch()} className="btn-danger">
             Retry
           </button>
         </div>
@@ -257,7 +215,7 @@ const AccountsPage = () => {
             ? `Are you sure you want to delete your ${deleteDialog.account.accountType} account ending in ${deleteDialog.account.accountNumber.slice(-4)}? This action cannot be undone.`
             : ''
         }
-        confirmText={deleting ? "Deleting..." : "Delete Account"}
+        confirmText={deleteAccountMutation.isPending ? "Deleting..." : "Delete Account"}
         cancelText="Cancel"
         onConfirm={confirmDeleteAccount}
         onCancel={cancelDeleteAccount}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { accountService } from '../services/accountService';
+import { useAccounts } from '../hooks/useAccounts';
 import TransactionForms from '../components/transactions/TransactionForms';
 import TransactionHistory from '../components/transactions/TransactionHistory';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -7,56 +7,38 @@ import Navigation from '../components/common/Navigation';
 import './TransactionsPage.css';
 
 const TransactionsPage = () => {
+  // React Query hooks
+  const { data: userAccounts = [], isLoading: loading, error: queryError, refetch } = useAccounts();
+  
+  // Local state
   const [selectedAccount, setSelectedAccount] = useState(null);
-  const [userAccounts, setUserAccounts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('transactions');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const accounts = await accountService.getUserAccounts();
-        setUserAccounts(accounts);
-        
-        // Auto-select first account if available
-        if (accounts.length > 0) {
-          setSelectedAccount(accounts[0]);
-        }
-      } catch (err) {
-        setError('Failed to load accounts');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Convert query error to string for display
+  const error = queryError ? 'Failed to load accounts' : '';
 
-    fetchAccounts();
-  }, []);
+  // Auto-select first account when accounts are loaded
+  useEffect(() => {
+    if (userAccounts.length > 0 && !selectedAccount) {
+      setSelectedAccount(userAccounts[0]);
+    }
+  }, [userAccounts.length]); // Only depend on length to prevent unnecessary re-runs
 
   const handleTransactionSuccess = (transaction) => {
     // Trigger refresh of transaction history and account data
     setRefreshTrigger(prev => prev + 1);
     
-    // Optionally refresh account balances
-    const refreshAccount = async () => {
-      try {
-        const accounts = await accountService.getUserAccounts();
-        setUserAccounts(accounts);
-        
-        // Update selected account with new balance
-        if (selectedAccount) {
-          const updatedAccount = accounts.find(acc => acc.accountNumber === selectedAccount.accountNumber);
-          if (updatedAccount) {
-            setSelectedAccount(updatedAccount);
-          }
+    // Refresh account balances using React Query
+    refetch().then((result) => {
+      // Update selected account with new balance
+      if (selectedAccount && result.data) {
+        const updatedAccount = result.data.find(acc => acc.accountNumber === selectedAccount.accountNumber);
+        if (updatedAccount) {
+          setSelectedAccount(updatedAccount);
         }
-      } catch (err) {
-        console.error('Failed to refresh account data:', err);
       }
-    };
-
-    refreshAccount();
+    });
   };
 
   const formatAccountDisplay = (account) => {

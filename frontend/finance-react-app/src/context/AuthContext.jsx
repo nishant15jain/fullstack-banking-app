@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLogin, useRegister, useLogout, useCurrentUser } from '../hooks/useAuth';
 import { authService } from '../services/authService';
 
 const AuthContext = createContext();
@@ -12,38 +13,18 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // React Query hooks
+  const { data: user, isLoading: loading } = useCurrentUser();
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
+  const logoutMutation = useLogout();
 
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const token = authService.getToken();
-      if (token) {
-        setIsAuthenticated(true);
-        const userData = await authService.getCurrentUser();
-        setUser(userData);
-      }
-    } catch (error) {
-      authService.logout();
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Determine authentication status
+  const isAuthenticated = authService.isAuthenticated() && !!user;
 
   const login = async (email, password) => {
     try {
-      const response = await authService.login(email, password);
-      setIsAuthenticated(true);
-      // Store user data if available
-      if (response.user) {
-        setUser(response.user);
-        localStorage.setItem('user', JSON.stringify(response.user));
-      }
+      const response = await loginMutation.mutateAsync({ email, password });
       return response;
     } catch (error) {
       throw error;
@@ -52,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await authService.register(userData);
+      const response = await registerMutation.mutateAsync(userData);
       return response;
     } catch (error) {
       throw error;
@@ -60,9 +41,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    authService.logout();
-    setUser(null);
-    setIsAuthenticated(false);
+    logoutMutation.mutate();
   };
 
   const value = {

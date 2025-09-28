@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { accountService } from '../../services/accountService';
+import { useCreateAccount } from '../../hooks/useAccounts';
 import './CreateAccountForm.css';
 
 const CreateAccountForm = ({ onAccountCreated, onCancel }) => {
+  const createAccountMutation = useCreateAccount();
+  
   const [formData, setFormData] = useState({
     accountType: 'SAVINGS',
     initialBalance: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+
+  const loading = createAccountMutation.isPending;
+  const error = createAccountMutation.error?.message || '';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,13 +19,14 @@ const CreateAccountForm = ({ onAccountCreated, onCancel }) => {
       ...prev,
       [name]: value
     }));
-    if (error) setError('');
+    // Clear error when user starts typing
+    if (error) {
+      createAccountMutation.reset();
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
 
     try {
       const accountData = {
@@ -30,12 +34,11 @@ const CreateAccountForm = ({ onAccountCreated, onCancel }) => {
         balance: Math.max(0, parseFloat(formData.initialBalance) || 0)
       };
 
-      const newAccount = await accountService.createAccount(accountData);
+      const newAccount = await createAccountMutation.mutateAsync(accountData);
       onAccountCreated(newAccount);
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      // Error is handled by React Query and displayed via the error state
+      console.error('Failed to create account:', err);
     }
   };
 

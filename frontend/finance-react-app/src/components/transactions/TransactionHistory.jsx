@@ -1,56 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { transactionService } from '../../services/transactionService';
+import { useTransactionHistoryPaginated } from '../../hooks/useTransactions';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import './TransactionHistory.css';
 
 const TransactionHistory = ({ accountNumber, refreshTrigger }) => {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  // Local state for pagination and sorting
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortDir, setSortDir] = useState('desc');
-  const [totalElements, setTotalElements] = useState(0);
 
-  const fetchTransactions = async (page = 0) => {
-    if (!accountNumber) return;
-    
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await transactionService.getTransactionHistoryPaginated(
-        accountNumber, 
-        page, 
-        pageSize, 
-        sortBy, 
-        sortDir
-      );
-      
-      setTransactions(response.content || []);
-      setCurrentPage(response.number || 0);
-      setTotalPages(response.totalPages || 0);
-      setTotalElements(response.totalElements || 0);
-    } catch (err) {
-      setError(err.message || 'Failed to fetch transactions');
-      setTransactions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Reset pagination when account changes
   useEffect(() => {
-    fetchTransactions(0);
     setCurrentPage(0);
-  }, [accountNumber, pageSize, sortBy, sortDir, refreshTrigger]);
+  }, [accountNumber]);
+
+  // React Query hook
+  const { 
+    data: response, 
+    isLoading: loading, 
+    error: queryError, 
+    refetch 
+  } = useTransactionHistoryPaginated(accountNumber, currentPage, pageSize, sortBy, sortDir);
+
+  // Extract data from response
+  const transactions = response?.content || [];
+  const totalPages = response?.totalPages || 0;
+  const totalElements = response?.totalElements || 0;
+  const error = queryError ? 'Failed to fetch transactions' : '';
+
+  // Refetch when refreshTrigger changes (for real-time updates after transactions)
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      refetch();
+    }
+  }, [refreshTrigger]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 0 && newPage < totalPages && newPage !== currentPage) {
       setCurrentPage(newPage);
-      fetchTransactions(newPage);
     }
   };
 
@@ -122,7 +111,7 @@ const TransactionHistory = ({ accountNumber, refreshTrigger }) => {
             <span>per page</span>
           </div>
           <button 
-            onClick={() => fetchTransactions(currentPage)} 
+            onClick={() => refetch()} 
             className="refresh-button"
             disabled={loading}
           >
