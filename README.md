@@ -1,3 +1,2 @@
 Engineered a full-stack banking application with a robust Spring Boot backend, dynamic React frontend, and deployment on AWS Elastic Beanstalk, demonstrating expertise in both server-side and client-side development.
 Backend API Development: Developed a secure and scalable REST API for a banking application using Spring Boot. Implemented core features including user account creation, fund transfers, transaction history, and balance inquiries.
-You can access thsi project here - https://banking-finance-app.netlify.app
